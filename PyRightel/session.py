@@ -10,7 +10,7 @@ class session:
         self.password = None
         self.token = None
         self.authExpirey = None 
-        self.headers = {"version": "0.13.0"}
+        self.headers = {"version": data.static.apiVersion, "User-Agent"  : data.static.userAgent}
 
     def authenticate(self):
         if (self.token == None or not isAuthenticated(self)):

@@ -10,6 +10,10 @@ class static:
         "verifyAuth":"/v2/auth/"
     } 
 
+    pyrVersion = "0.0.1-pa"
+    apiVersion = "0.13.0"
+    userAgent = f"PyRightel/{pyrVersion}"
+
     #todo find a better way to serve read only strings
 
     def loginUrl():
