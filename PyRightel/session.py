@@ -1,5 +1,5 @@
 import requests
-import data
+from . import data
 import jwt
 
 
@@ -10,23 +10,29 @@ class session:
         self.password = None
         self.token = None
         self.authExpirey = None 
+        self.headers = {"version": "0.13.0"}
 
-    
-    
-    def Authenticate(self):
+    def authenticate(self):
         if (self.token == None or not isAuthenticated(self)):
 
             if (type(self.phoneNumber) is str and type(self.password) is str):
+
                 if ((len(self.phoneNumber)>=9 and len(self.phoneNumber)<=13)or(len(self.password)>=8 and en(self.password)<=12)):
+
                     if(self.phoneNumber.isnumeric()):
-                            
+
+                        try:
+                            del self.headers["Authorization"]
+                        except KeyError:
+                            pass
                         post=f'{{"msisdn":"{self.phoneNumber}","password":"{self.password}"}}'
-                        headers = {"version": "0.13.0"}
-                        req = requests.Request('POST',data.static.loginUrl(),data=post,headers=headers)
+                        req = requests.Request('POST',data.static.loginUrl(),data=post,headers=self.headers)
+                        #todo proper connection error handeling
                         req = req.prepare()
-                        res = self.session.send(req)
+                            res = self.session.send(req)
                         if (res.status_code == 200):
                             self.token = res.json()["data"][0]["accessToken"]
+                            self.headers["Authorization"] = f"Bearer {self.token}"
                             self.authExpirey = jwt.decode(self.token,options={"verify_signature": False})["expireAt"]
                             return True
                         elif (res.status_code == 401):
@@ -68,25 +74,21 @@ class session:
         else:
             return isAuthenticated(self)
 
-
-
-
     def isAuthenticated(self) -> bool:
-        headers = {"version": "0.13.0"}
-        headers["Authorization"] = f"Bearer {self.token}"
-        req = requests.Request('POST',data.static.verifyAuth(),headers=headers)
+        req = requests.Request('POST',data.static.verifyAuth(),headers=self.headers)
         req = req.prepare()
         res = self.session.send(req)
         if (res.status_code==200):
-            #success
-            #todo figure out if this fucntion updates the token or not then update current token accordingly
-            #self.token = res.json()["data"][0]["accessToken"]
-            #self.authExpirey = jwt.decode(self.token,options={"verify_signature": False})["expireAt"]
+            #success, authenticated
+            if (self.token != res.json()["data"]["accessToken"]):
+                self.token = res.json()["data"]["accessToken"]
+                self.headers["Authorization"] = f"Bearer {self.token}"
+                self.authExpirey = jwt.decode(self.token,options={"verify_signature": False})["expireAt"]
             return True
+        elif(res.status_code==401):
+            #success, unauthenticated
+            return False
         else:
             #failed
-            return False
-
-
-
-
+            raise authException(f"unexpected status code while checking, is Rightel service available?\nResponse: {res.reason}-({res.status_code})\n{res.url}")
+            return None
