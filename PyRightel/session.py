@@ -29,7 +29,7 @@ class session:
                         req = requests.Request('POST',data.static.loginUrl(),data=post,headers=self.headers)
                         #todo proper connection error handeling
                         req = req.prepare()
-                            res = self.session.send(req)
+                        res = self.session.send(req)
                         if (res.status_code == 200):
                             self.token = res.json()["data"][0]["accessToken"]
                             self.headers["Authorization"] = f"Bearer {self.token}"
