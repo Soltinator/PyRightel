@@ -26,7 +26,7 @@ class session:
                         except KeyError:
                             pass
                         post=f'{{"msisdn":"{self.phoneNumber}","password":"{self.password}"}}'
-                        req = requests.Request('POST',data.static.loginUrl(),data=post,headers=self.headers)
+                        req = requests.Request('POST',data.static.endpoints.LoginUsingPassword,data=post,headers=self.headers)
                         #todo proper connection error handeling
                         req = req.prepare()
                         res = self.session.send(req)
@@ -75,7 +75,7 @@ class session:
             return isAuthenticated(self)
 
     def isAuthenticated(self) -> bool:
-        req = requests.Request('POST',data.static.verifyAuth(),headers=self.headers)
+        req = requests.Request('POST',data.static.endpoints.verifyToken,headers=self.headers)
         req = req.prepare()
         res = self.session.send(req)
         if (res.status_code==200):
