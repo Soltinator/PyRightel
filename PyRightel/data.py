@@ -1,5 +1,7 @@
+import requests
 from dataclasses import dataclass
-
+import platform
+from enum import Enum
 
 class Endpoint(property):
     def __init__(self,getter):
@@ -7,23 +9,69 @@ class Endpoint(property):
     def __get__(self,cls,owner):
         return self.getter(owner)
 
+
+class session:
+    def __init__(self):
+        self.session = requests.session()
+        self.authExpirey = None 
+        self.headers = {"version": static.apiVersion, "User-Agent"  : static.userAgent, "os":platform.system()} 
+        self.phoneNumber = None
+        self.password = None
+        self.token = None
+
+class packageType(Enum):
+    none = 0
+    unspecified = 1
+    CREDIT = 2
+    CALL = 3
+    INTERNET = 4
+    SMS = 5
+
+class packageUnit(Enum):
+    none = 0
+    unspecified = 1
+    RIAL = 2
+    GIGABYTE = 3
+    #TODO add all units (i have to pay for some packages and sniff the api to see all of the units)
+
+class package:
+    def __init__(self):
+        self.packageName : str #friendly name of the package when bought. not an id or unique name.
+        self.packageType : packageType #the type of the balance held in package
+        self.unit : packageUnit #string name of the unit of mesurement of the package
+        self.isLocalCurrency : bool#true for the money wallet balance which is a package that everyone has in their account
+        self.remain : float #remaining balance in package
+        self.balance : float #total balance in package
+        self.startTimestamp :int #both timestamps gotten from api is offset by 12600 seconds to convert the resulting time from gmt to local iran time
+        self.endTimestamp : int
+
+class packageResponse:
+    def __init__(self):
+        self.message : str
+        self.rawData : str
+        self.json : str
+        self.packages : list[package]
+         
+
 class static:
     #all of the static data of the wrapper is stored here
-    #todo find a way to store these in a file and read from it properly
+    #TODO find a way to store these in a file and read from it properly
     globalHeaders = {"version": "0.13.0"} 
     rootUrl = "https://myrightel-api.rightel.ir" 
     endpointsList = {
-        #todo add all of the endpoints to this dict
+        #TODO add all of the endpoints to this dict
         "PasswordLogin":"/v2/auth/login/password/",
-        "verifyToken":"/v2/auth/"
+        "verifyToken":"/v2/auth/",
+        "listPackages":"/v2/balance/list/",
+        "appAvailable":"/v2/app/available/"
     } 
 
     pyrVersion = "0.0.1-pa"
     apiVersion = "0.13.0"
     userAgent = f"PyRightel/{pyrVersion}"
 
-    #todo find a way to make these read only and not mutable (i hate python)
-    #todo this seems inefficent, cache or static? find a way to serve a premade list instead of adding strings for each read (but for now it works fine)
+    #TODO find a way to make these read only and not mutable (i hate python)
+    #TODO this seems inefficent, cache or static? find a way to serve a premade list instead of adding strings for each read (but for now it works fine)
     class endpoints:
         @Endpoint
         def LoginUsingPassword(self):
@@ -32,3 +80,12 @@ class static:
         @Endpoint
         def verifyToken(self):
             return static.rootUrl+static.endpointsList["verifyToken"]
+
+        @Endpoint
+        def listPackages(self):
+            return static.rootUrl+static.endpointsList["listPackages"]
+        
+        @Endpoint
+        def appAvailable(self):
+            return static.rootUrl+static.endpointsList["appAvailable"]
+            
