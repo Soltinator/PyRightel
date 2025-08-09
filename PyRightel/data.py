@@ -2,6 +2,10 @@ import requests
 from dataclasses import dataclass
 import platform
 from enum import Enum
+import logging
+
+log = logging.getLogger('PyRightel.data')
+log.debug("setting up data module")
 
 class Endpoint(property):
     def __init__(self,getter):
@@ -88,4 +92,6 @@ class static:
         @Endpoint
         def appAvailable(self):
             return static.rootUrl+static.endpointsList["appAvailable"]
+
+log.debug("finished setting up data module")
             

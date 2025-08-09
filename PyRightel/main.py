@@ -3,7 +3,10 @@ from . import communications as c
 import time
 import requests
 import jwt
+import logging 
 
+log = logging.getLogger('PyRightel.main')
+log.debug("setting up main module")
 
 #get session object (phone number and account password is required)
 def getSession(phoneNumber:str,password:str)-> data.session:
@@ -83,6 +86,7 @@ def authenticate(session):
         return isAuthenticated(session)
 
 def isAuthenticated(session) -> bool:
+    log.debug(f"checking authentication status for session ({session.phoneNumber})")
     req = requests.Request('POST',data.static.endpoints.verifyToken,headers=session.headers)
     req = req.prepare()
     res = session.session.send(req)
@@ -118,6 +122,7 @@ def isSessionExpired (session) -> bool:
         return True
 
 def listPackages (session) -> list[data.package]:  
+    log.debug(f"asking for a list of packages for ({session.phoneNumber})")
     res = c.get (session,data.static.endpoints.listPackages)
     if (res.status_code == 200):
         packagelist = []
@@ -146,3 +151,5 @@ def listPackages (session) -> list[data.package]:
 
     else:
         return None
+
+log.debug("finished setting up main module")
