@@ -27,6 +27,13 @@ class session:
         self.password = None
         self.token = None
 
+class responseStatus(Enum):
+    unspecified = 0
+    ok = 1
+    unauthenticated = 2
+    unexpected = 3
+    unknown = 99
+
 class packageType(Enum):
     none = 0
     unspecified = 1
@@ -53,12 +60,10 @@ class package:
         self.startTimestamp :int #both timestamps gotten from api is offset by 12600 seconds to convert the resulting time from gmt to local iran time
         self.endTimestamp : int
 
-class packageResponse:
-    def __init__(self):
-        self.message : str
-        self.rawData : str
-        self.json : str
-        self.packages : list[package]
+class response:
+    def __init__(self,status:responseStatus,responseData):
+        self.status = status
+        self.data = responseData
          
 
 class static:

@@ -105,7 +105,7 @@ def isAuthenticated(session) -> bool:
         raise authException(f"unexpected status code while checking, is Rightel service available?\nResponse: {res.reason}-({res.status_code})\n{res.url}")
         return None
 
-def ImportToken(session,tokenString):
+def ImportToken(session,tokenString): #debug function (not gonna work in future i think)
     session.token = tokenString
     session.headers["Authorization"] = f"Bearer {session.token}"
     session.authExpirey = jwt.decode(session.token,options={"verify_signature": False})["expireAt"]
@@ -124,14 +124,9 @@ def isSessionExpired (session) -> bool:
 def listPackages (session) -> list[data.package]:  
     log.debug(f"asking for a list of packages for ({session.phoneNumber})")
     res = c.get (session,data.static.endpoints.listPackages)
-    if (res.status_code == 200):
+    if (res.status == data.responseStatus["ok"]):
         packagelist = []
-        out = data.packageResponse()
-        out.rawData = res.content
-        #TODO error check for json parsing
-        json = res.json()
-        out.message = json ["message"]
-        outdata = json["data"]
+        outdata = res.data
         if (len(outdata)>0):
             for packageType in outdata["balance"]:
                 for package in outdata["balance"][packageType]:
@@ -142,13 +137,12 @@ def listPackages (session) -> list[data.package]:
                     newPackage.isLocalCurrency = package["isLocalCurrency"]
                     newPackage.remain = package["remain"]
                     newPackage.balance = package["balance"]
+                    #timestamps are in 3600 sec offset, 3600000 milisec
                     newPackage.startTimestamp = package["startTimestamp"]
                     newPackage.endTimestamp = package["endTimestamp"]
                     packagelist.append(newPackage)
 
         return packagelist
-
-
     else:
         return None
 
