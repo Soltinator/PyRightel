@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import platform
 from enum import Enum
 import logging
+from urllib3.util.retry import Retry
 
 log = logging.getLogger('PyRightel.data')
 log.debug("setting up data module")
@@ -17,6 +18,9 @@ class Endpoint(property):
 class session:
     def __init__(self):
         self.session = requests.session()
+        if (static.httpAdapter is None):
+            static.httpAdapter = requests.adapters.HTTPAdapter(max_retries=static.retryStrategy)
+        self.session.mount(static.rootUrl,static.httpAdapter)
         self.authExpirey = None 
         self.headers = {"version": static.apiVersion, "User-Agent"  : static.userAgent, "os":platform.system()} 
         self.phoneNumber = None
@@ -73,6 +77,18 @@ class static:
     pyrVersion = "0.0.1-pa"
     apiVersion = "0.13.0"
     userAgent = f"PyRightel/{pyrVersion}"
+
+    maxRetryOnError = 5
+    requestTimeout = 4
+
+    httpAdapter = None
+
+    retryStrategy = Retry(
+        total = maxRetryOnError,
+        redirect = 0,
+        backoff_factor = 1,
+        backoff_max = 5
+    )
 
     #TODO find a way to make these read only and not mutable (i hate python)
     #TODO this seems inefficent, cache or static? find a way to serve a premade list instead of adding strings for each read (but for now it works fine)
