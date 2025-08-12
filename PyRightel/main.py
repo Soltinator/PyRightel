@@ -124,7 +124,7 @@ def isSessionExpired (session) -> bool:
 def listPackages (session) -> list[data.package]:  
     log.debug(f"asking for a list of packages for ({session.phoneNumber})")
     res = c.get (session,data.static.endpoints.listPackages)
-    if (res.status == data.responseStatus["ok"]):
+    if (res.status == data.responseStatus["OK"]):
         packagelist = []
         outdata = res.data
         if (len(outdata)>0):

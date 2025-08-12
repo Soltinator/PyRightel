@@ -29,7 +29,7 @@ class session:
 
 class responseStatus(Enum):
     unspecified = 0
-    ok = 1
+    OK = 1
     unauthenticated = 2
     unexpected = 3
     unknown = 99
@@ -47,6 +47,7 @@ class packageUnit(Enum):
     unspecified = 1
     RIAL = 2
     GIGABYTE = 3
+    MEGABYTE = 4
     #TODO add all units (i have to pay for some packages and sniff the api to see all of the units)
 
 class package:

@@ -2,6 +2,7 @@ import requests
 from . import data
 import jwt
 import logging
+import json
 
 log = logging.getLogger('PyRightel.data')
 log.debug("setting up communications module")
@@ -25,7 +26,7 @@ def get(session,endpoint)->dict:
     # log into console 
     # return error status or null
 
-    #when 
+    #when (DONE)
     # requests.ConnectTimeout 
     # requests.ConnectionError
     # requests.ReadTimeout
@@ -35,20 +36,26 @@ def get(session,endpoint)->dict:
     #when requests.RequestException it was unknown error and should dump all and abort excution
 
     # as for these i dont know what to do yet. 
-    # requests.TooManyRedirects
-    # requests.JSONDecodeError
+    # requests.TooManyRedirects (should not redirect at all, it must have failed)
+    # requests.JSONDecodeError (DONE)
     # soft fail maybe? (not abort but return null data or error data)
     
-    #TODO error check for json parsing
 
     req = requests.Request('GET',endpoint,headers=session.headers)
     req = req.prepare()
     res = session.session.send(req,timeout=data.static.requestTimeout)
     if (res.status_code == 200):
-        #check if the json data is ok here
-        outdata = res.json()["data"]
+        if (json.loads(res.text)):
+            response = res.json()
+            outdata = response["data"]
+            message = response["message"]
+            #TODO check for error messages here later. for now just pass them
+            return data.response(data.responseStatus[message],outdata)
 
-    return data.response(data.responseStatus["ok"],outdata)
+    elif (res.status_code == 403):
+         return data.response(data.responseStatus["unauthenticated"],None)
+    else:
+        return data.response(data.responseStatus["unexpected"],None)
 
 def post(session,endpoint,postData)->dict:
     req = requests.Request('POST',endpoint,data=postData,headers=session.headers)
