@@ -81,9 +81,9 @@ class package:
     @property
     def isExpired (self) -> bool:
         if (self.remainingTimestamp >= 0):
-            return True
-        else:
             return False
+        else:
+            return True
 
     
 class response:
