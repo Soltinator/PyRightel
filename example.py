@@ -18,7 +18,7 @@ else:
 
 print(f"is authenticated: {Rightel.isAuthenticated(session)}\n")
 
-print("Here is a list of active packages and their remaining:")
+print("Here is a list of active packages and their properties:")
 ls = Rightel.listPackages(session)
 for package in ls:
-    print(f"Package Type: {str(package.packageType)} - remain: {package.remain}")
+    print(f"Package Type: {package.packageType.name} - name:{package.packageName} - remain: {package.remain} {package.unit.name} ({package.remainingBalancePercent}%) - remaining time:{package.remainingTimestamp} - is expired? ({package.isExpired}) - duration:{package.duration} - start:{package.startTimestamp} -> end:{package.endTimestamp}")
