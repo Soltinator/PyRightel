@@ -137,9 +137,9 @@ def listPackages (session) -> list[data.package]:
                     newPackage.isLocalCurrency = package["isLocalCurrency"]
                     newPackage.remain = package["remain"]
                     newPackage.balance = package["balance"]
-                    #timestamps are in 3600 sec offset, 3600000 milisec
-                    newPackage.startTimestamp = package["startTimestamp"]
-                    newPackage.endTimestamp = package["endTimestamp"]
+                    # first /1000 to convert to seconds from miliseconds then - 12600 to convert from local (rightel time) to GMT
+                    newPackage.startTimestamp =  int ( package["startTimestamp"]  / 1000 ) - 12600
+                    newPackage.endTimestamp = int (package["endTimestamp"] / 1000 ) - 12600
                     packagelist.append(newPackage)
 
         return packagelist
