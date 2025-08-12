@@ -4,6 +4,7 @@ import platform
 from enum import Enum
 import logging
 from urllib3.util.retry import Retry
+import time
 
 log = logging.getLogger('PyRightel.data')
 log.debug("setting up data module")
@@ -61,6 +62,30 @@ class package:
         self.startTimestamp :int #both timestamps gotten from api is offset by 12600 seconds to convert the resulting time from gmt to local iran time
         self.endTimestamp : int
 
+
+    @property    
+    def remainingBalancePercent (self) -> int:
+        if (self.balance != 0):
+            return round(((self.remain*100)/self.balance),2)
+        else:
+            return 0
+
+    @property
+    def remainingTimestamp (self) -> int:
+        return  int(self.endTimestamp - time.time())
+    
+    @property
+    def duration (self) -> int:
+        return int(self.endTimestamp - self.startTimestamp)
+
+    @property
+    def isExpired (self) -> bool:
+        if (self.remainingTimestamp >= 0):
+            return True
+        else:
+            return False
+
+    
 class response:
     def __init__(self,status:responseStatus,responseData):
         self.status = status
