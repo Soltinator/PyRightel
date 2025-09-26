@@ -1,4 +1,5 @@
 from . import data
+from . import exceptions
 from . import communications as c
 import time
 import requests
@@ -25,11 +26,11 @@ def getSession(phoneNumber:str,password:str)-> data.session:
 
 def authenticate(session):
     #TODO add checks to see what fields of a session object is populated
-    if (session.token == None or not isAuthenticated(session)):
+    if (session.token is None or not isAuthenticated(session)):
 
         if (type(session.phoneNumber) is str and type(session.password) is str):
 
-            if ((len(session.phoneNumber)>=9 and len(session.phoneNumber)<=13)or(len(session.password)>=8 and en(session.password)<=12)):
+            if ((len(session.phoneNumber)>=9 and len(session.phoneNumber)<=13)or(len(session.password)>=8 and len(session.password)<=12)):
 
                 if(session.phoneNumber.isnumeric()):
 
@@ -49,39 +50,39 @@ def authenticate(session):
                         return True
                     elif (res.status_code == 401):
                         #bad login creds
-                        raise authException(f"invalid login, check phone number or password\nResponse: {res.reason}-({res.status_code})\n{res.url}")
+                        raise exceptions.authException(f"invalid login, check phone number or password\nResponse: {res.reason}-({res.status_code})\n{res.url}")
                         return False
                     elif (res.status_code != 200 and res.status_code != 401):
-                        raise authException(f"unexpected status while authenticating, is Rightel service available?\nResponse: {res.reason}-({res.status_code})\n{res.url}")
+                        raise exceptions.authException(f"unexpected status while authenticating, is Rightel service available?\nResponse: {res.reason}-({res.status_code})\n{res.url}")
                         return None
                     else:
-                        raise authException(f"unknown error while authenticating, check internet connection perhaps?\nResponse: {res.reason}-({res.status_code})\n{res.url}")
+                        raise exceptions.authException(f"unknown error while authenticating, check internet connection perhaps?\nResponse: {res.reason}-({res.status_code})\n{res.url}")
                         return None
 
                 elif(not session.phoneNumber.isnumeric()):
-                    raise authException("phone number has invalid characters")
+                    raise exceptions.authException("phone number has invalid characters")
                     return None
 
             elif (len(session.phoneNumber)<9 or len(session.phoneNumber)>13):
-                raise authException("phone number has invalid length")
+                raise exceptions.authException("phone number has invalid length")
                 return None
 
-            elif (len(session.password)<8 or en(session.password)>12):
-                raise authException("password has invalid length")
+            elif (len(session.password)<8 or len(session.password)>12):
+                raise exceptions.authException("password has invalid length")
                 return None
 
-            elif ((len(session.password)<8 or en(session.password)>12) and (len(session.phoneNumber)<9 or len(session.phoneNumber)>13)):
-                raise authException("phone number and password are a valid lenght")
+            elif ((len(session.password)<8 or len(session.password)>12) and (len(session.phoneNumber)<9 or len(session.phoneNumber)>13)):
+                raise exceptions.authException("phone number and password are a valid lenght")
                 return None
 
         elif (type(session.phoneNumber) is not str):
-            raise authException("phone number is not a string")
+            raise exceptions.authException("phone number is not a string")
 
         elif (type(session.password) is not str):
-            raise authException("password is not a string")
+            raise exceptions.authException("password is not a string")
 
         elif (type(session.phoneNumber) is not str and type(session.password) is not str):
-            raise authException("phone number and password are not a string, have you forgotten setting them?")
+            raise exceptions.authException("phone number and password are not a string, have you forgotten setting them?")
     else:
         return isAuthenticated(session)
 
@@ -102,7 +103,7 @@ def isAuthenticated(session) -> bool:
         return False
     else:
         #failed
-        raise authException(f"unexpected status code while checking, is Rightel service available?\nResponse: {res.reason}-({res.status_code})\n{res.url}")
+        raise exceptions.authException(f"unexpected status code while checking, is Rightel service available?\nResponse: {res.reason}-({res.status_code})\n{res.url}")
         return None
 
 def ImportToken(session,tokenString): #debug function (not gonna work in future i think)
