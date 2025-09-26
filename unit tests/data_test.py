@@ -1,6 +1,11 @@
 import unittest
 import time
-from PyRightel import data
+
+import os
+import sys
+sys.path.append(os.getcwd())
+
+from PyRightel import  data
 
 class dataUnitTests(unittest.TestCase):
 
