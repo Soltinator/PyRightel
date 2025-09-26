@@ -8,3 +8,6 @@ class AccessDenied(Exception):
 
 class MalformedJsonResponse(Exception):
     pass
+
+class authException(Exception):
+    pass
