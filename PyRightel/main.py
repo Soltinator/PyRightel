@@ -1,10 +1,10 @@
+import time
+import logging
+import jwt
+import requests
 from . import data
 from . import exceptions
 from . import communications as c
-import time
-import requests
-import jwt
-import logging
 
 log = logging.getLogger("PyRightel.main")
 log.debug("setting up main module")

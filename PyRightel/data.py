@@ -1,10 +1,10 @@
-import requests
-from dataclasses import dataclass
 import platform
 from enum import Enum
 import logging
-from urllib3.util.retry import Retry
 import time
+from urllib3.util.retry import Retry
+import requests
+#from dataclasses import dataclass
 
 log = logging.getLogger("PyRightel.data")
 log.debug("setting up data module")

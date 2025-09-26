@@ -1,8 +1,8 @@
-import requests
-from . import data
-import jwt
 import logging
 import json
+import requests
+from . import data
+#import jwt
 
 log = logging.getLogger("PyRightel.data")
 log.debug("setting up communications module")

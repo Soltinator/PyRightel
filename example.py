@@ -1,6 +1,6 @@
-from PyRightel import main as Rightel
 import pickle
 import os.path
+from PyRightel import main as Rightel
 
 phoneNumber = "09876543210"
 password = "**********"
